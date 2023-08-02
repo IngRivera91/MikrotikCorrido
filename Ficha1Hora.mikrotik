@@ -5,42 +5,44 @@
 # Ficha:          1 Hora
 
 {
-    :local Increase 60
-    :local Comment [ /ip hotspot user get $user comment ]
-    :if ( [:len [:find $Comment "DateNumber:"]]=0 ) do {
-        :local MinuteValue 1;
-        :local HourValue 60;
-        :local DayValue 1440;
+  :local Increase 60
+  :local Comment [ /ip hotspot user get $user comment ]
+  :if ( [:len [:find $Comment "DateNumber:"]]=0 ) do {
+    :local MinuteValue 1;
+    :local HourValue 60;
+    :local DayValue 1440;
 
-        :local MaxDateNumber 525599;
+    :local MaxDateNumber 525599;
 
-        :local DATE [/system clock get date];
-        :local TIME [/system clock get time];
+    :local DATE [/system clock get date];
+    :local TIME [/system clock get time];
 
-        :local StringMonth [:pick $DATE   0 3];
-        :local WeekArray ("jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec");
+    :local StringMonth [:pick $DATE   0 3];
+    :local WeekArray ("jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec");
 
-        :local MonthDig ([:find $WeekArray $StringMonth]);
+    :local MonthDig ([:find $WeekArray $StringMonth]);
 
-        :local MonthToDays ( 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334 );
+    :local MonthToDays ( 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334 );
 
-        :local NumberDaysMonth ([:pick $MonthToDays $MonthDig]);
+    :local NumberDaysMonth ([:pick $MonthToDays $MonthDig]);
 
-        :local NumberDay [ :pick $DATE  4 6 ];
-        set $NumberDay (($NumberDay+$NumberDaysMonth)-1);
+    :local NumberDay [ :pick $DATE  4 6 ];
+    :set $NumberDay (($NumberDay+$NumberDaysMonth)-1);
 
-        :local NumberHour [ :pick $TIME  0 2 ];
-        :local NumberMinute [ :pick $TIME  3 5 ];
+    :local NumberHour [ :pick $TIME  0 2 ];
+    :local NumberMinute [ :pick $TIME  3 5 ];
 
-        :local DateNumber 0;
+    :local DateNumber 0;
 
-        :set $DateNumber ($DateNumber+($NumberDay*$DayValue)+($NumberHour*$HourValue)+($NumberMinute*$MinuteValue));
+    :set $DateNumber (($NumberDay*$DayValue)+($NumberHour*$HourValue)+($NumberMinute*$MinuteValue));
 
-        :if (($DateNumber - $MaxDateNumber) > 0) do {
-            :set $DateNumber ($DateNumber - $MaxDateNumber);
-        }
+    :set $DateNumber ($DateNumber+$Increase);
 
-        :set $Comment ( "DateNumber:".($DateNumber+$Increase)."|" )
-        [ /ip hotspot user set $user comment=$Comment ]
+    :if (($DateNumber - $MaxDateNumber) > 0) do {
+        :set $DateNumber ($DateNumber - $MaxDateNumber);
     }
+
+    :set $Comment ( "DateNumber:".$DateNumber."|" )
+    [ /ip hotspot user set $user comment=$Comment ]
+  }
 }
