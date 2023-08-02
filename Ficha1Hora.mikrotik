@@ -40,7 +40,7 @@
             :set $DateNumber ($DateNumber - $MaxDateNumber);
         }
 
-        :set $Comment ( $Comment."DateNumber:".($DateNumber+$Increase)."|" )
+        :set $Comment ( "DateNumber:".($DateNumber+$Increase)."|" )
         [ /ip hotspot user set $user comment=$Comment ]
     }
 }
