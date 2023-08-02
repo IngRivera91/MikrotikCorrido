@@ -5,13 +5,15 @@
 # Ficha:          1 Hora
 
 {
-  :local Increase 60
-  :local Comment [ /ip hotspot user get $user comment ]
+  :local NumberOfHours 1;
+
+  :local Comment [ /ip hotspot user get $user comment ];
   :if ( [:len [:find $Comment "DateNumber:"]]=0 ) do {
     :local MinuteValue 1;
     :local HourValue 60;
     :local DayValue 1440;
 
+    :local Increase ($NumberOfHours*$HourValue);
     :local MaxDateNumber 525599;
 
     :local DATE [/system clock get date];
