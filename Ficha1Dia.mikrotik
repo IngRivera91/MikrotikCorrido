@@ -1,0 +1,50 @@
+# Nombre:         GetNextDateNumber
+# Autor:          Ricardo Rivera Sanchez
+# Descripcion:    Convierte la fecha actual a valor numerico y luego aumenta el tiempo que dura la ficha y lo guarda en un comentario.
+# Version:        1.0
+# Ficha:          1 Dia
+
+{
+  :local NumberOfDays 1;
+
+  :local Comment [ /ip hotspot user get $user comment ];
+  :if ( [:len [:find $Comment "DateNumber:"]]=0 ) do {
+    :local MinuteValue 1;
+    :local HourValue 60;
+    :local DayValue 1440;
+
+    :local Increase ($NumberOfDays*$DayValue);
+    :local MaxDateNumber 525599;
+
+    :local DATE [/system clock get date];
+    :local TIME [/system clock get time];
+
+    :local StringMonth [:pick $DATE   0 3];
+    :local WeekArray ("jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec");
+
+    :local MonthDig ([:find $WeekArray $StringMonth]);
+
+    :local MonthToDays ( 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334 );
+
+    :local NumberDaysMonth ([:pick $MonthToDays $MonthDig]);
+
+    :local NumberDay [ :pick $DATE  4 6 ];
+    :set $NumberDay (($NumberDay+$NumberDaysMonth)-1);
+
+    :local NumberHour [ :pick $TIME  0 2 ];
+    :local NumberMinute [ :pick $TIME  3 5 ];
+
+    :local DateNumber 0;
+
+    :set $DateNumber (($NumberDay*$DayValue)+($NumberHour*$HourValue)+($NumberMinute*$MinuteValue));
+
+    :set $DateNumber ($DateNumber+$Increase);
+
+    :if (($DateNumber - $MaxDateNumber) > 0) do {
+        :set $DateNumber ($DateNumber - $MaxDateNumber);
+    }
+
+    :set $Comment ( "DateNumber:".$DateNumber."|" )
+    [ /ip hotspot user set $user comment=$Comment ]
+  }
+}
