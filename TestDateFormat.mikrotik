@@ -1,0 +1,9 @@
+# Nombre:         TestDateFormat
+# Autor:          Ricardo Rivera Sanchez
+# Descripcion:    Imprime en el log la fecha actual para saber el formato de la fecha.
+# Version:        1.0
+
+{
+  :local DATE [/system clock get date];
+  :log info $DATE;
+}

@@ -2,6 +2,7 @@
 # Autor:          Ricardo Rivera Sanchez
 # Descripcion:    Convierte la fecha actual a valor numerico y luego aumenta el tiempo que dura la ficha y lo guarda en un comentario.
 # Version:        1.0
+# FormatoFecha:   mmm/dd/YYYY
 # Ficha:          1 Hora
 
 {

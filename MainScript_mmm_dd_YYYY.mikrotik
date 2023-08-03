@@ -2,6 +2,7 @@
 # Autor:          Ricardo Rivera Sanchez
 # Descripcion:    Convierte la fecha actual a valor numerico y itera sobre todos los users para ver cuales ya excedieron su tiempo
 # Version:        1.0
+# FormatoFecha:   mmm/dd/YYYY
 
 {
   :local MinuteValue 1;
