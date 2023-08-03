@@ -2,7 +2,7 @@
 # Autor:          Ricardo Rivera Sanchez
 # Descripcion:    Convierte la fecha actual a valor numerico y luego aumenta el tiempo que dura la ficha y lo guarda en un comentario.
 # Version:        1.0
-# FormatoFecha:   mmm/dd/YYYY
+# FormatoFecha:   YYYY-mm-dd
 # Ficha:          1 Hora
 
 {
@@ -20,16 +20,13 @@
     :local DATE [/system clock get date];
     :local TIME [/system clock get time];
 
-    :local StringMonth [:pick $DATE   0 3];
-    :local WeekArray ("jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec");
-
-    :local MonthDig ([:find $WeekArray $StringMonth]);
+    :local MonthDig ([:pick $DATE   5 7] - 1);
 
     :local MonthToDays ( 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334 );
 
     :local NumberDaysMonth ([:pick $MonthToDays $MonthDig]);
 
-    :local NumberDay [ :pick $DATE  4 6 ];
+    :local NumberDay [ :pick $DATE  8 10 ];
     :set $NumberDay (($NumberDay+$NumberDaysMonth)-1);
 
     :local NumberHour [ :pick $TIME  0 2 ];
