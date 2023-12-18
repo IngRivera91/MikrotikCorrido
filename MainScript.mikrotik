@@ -1,0 +1,83 @@
+# Nombre:         MainScript
+# Autor:          Ricardo Rivera Sanchez
+# Descripcion:    Convierte la fecha actual a valor numerico y itera sobre todos los users para ver cuales ya excedieron su tiempo
+# Version:        1.0
+
+{
+  :local MinuteValue 1;
+  :local HourValue 60;
+  :local DayValue 1440;
+  :local YearValue 525600;
+
+  :local DATE [/system clock get date];
+  :local TIME [/system clock get time];
+
+  :local Simbol ([:pick $DATE   4 5]);
+  :local Year 0;
+  :local NumberDaysMonth 0;
+  :local NumberDay 0;
+  :local NumberHour [ :pick $TIME  0 2 ];
+  :local NumberMinute [ :pick $TIME  3 5 ];
+  :local DateNumber 0;
+
+  :local MonthToDays ( 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334 );
+
+  :if ( $Simbol = "-" ) do {
+
+    :set $Year ([:pick $DATE 2 4]);
+
+    :log info $DATE;
+
+    :local MonthDig ([:pick $DATE   5 7] - 1);
+
+    :set $NumberDaysMonth ([:pick $MonthToDays $MonthDig]);
+
+    :set $NumberDay [ :pick $DATE  8 10 ];
+    :set $NumberDay ( ( $NumberDay+$NumberDaysMonth) -1 );
+
+  }
+
+  :if ( $Simbol != "-" ) do {
+
+    :set $Year ([:pick $DATE 9 11]);
+
+    :log info $DATE;
+
+    :local StringMonth [:pick $DATE   0 3];
+    :local WeekArray ("jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec");
+
+    :local MonthDig ([:find $WeekArray $StringMonth]);
+
+    :set $NumberDaysMonth ([:pick $MonthToDays $MonthDig]);
+
+    :set NumberDay [ :pick $DATE  4 6 ];
+    :set $NumberDay (($NumberDay+$NumberDaysMonth)-1);
+
+  }
+
+  :set $DateNumber (($Year*$YearValue)+($NumberDay*$DayValue)+($NumberHour*$HourValue)+($NumberMinute*$MinuteValue));
+
+  :log info $DateNumber;
+
+  :foreach user in=[/ip hotspot user find where disabled=no ] do={
+    :local UserName [/ip hotspot user get $user name]
+    :local LimitUptime [/ip hotspot user get $user limit-uptime]
+    :local Comment [/ip hotspot user get $user comment];
+
+    :if ( [:len [:find $Comment "DateNumber:"]] != 0 ) do {
+
+      :local LastDateNumber [:tonum [:pick $Comment ([:find $Comment ":"]+1) [:find $Comment "|"] ] ];
+
+      :if ($LastDateNumber <= $DateNumber) do {
+
+        [ /ip hotspot user set $UserName disabled=yes ]
+        [ /ip hotspot active remove [find where user=$UserName] ]
+        [ /ip hotspot cookie remove [find where user=$UserName] ]
+
+      }
+
+    }
+
+  }
+
+}
